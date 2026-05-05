@@ -29,6 +29,7 @@ const statementMenu = document.querySelector("#statement-menu");
 const pasteStatementFromClipboardButton = document.querySelector("#paste-statement-from-clipboard");
 const openStatementTextButton = document.querySelector("#open-statement-text");
 const openMovementSearchButton = document.querySelector("#open-movement-search");
+const openStatementHelpButton = document.querySelector("#open-statement-help");
 const openMovementAnalysisButton = document.querySelector("#open-movement-analysis");
 const openMonthlyPdfReportButton = document.querySelector("#open-monthly-pdf-report");
 const openTrackingPanelModalButton = document.querySelector("#open-tracking-panel-modal");
@@ -60,6 +61,8 @@ const movementSearchDebits = document.querySelector("#movement-search-debits");
 const movementSearchNet = document.querySelector("#movement-search-net");
 const movementSearchResults = document.querySelector("#movement-search-results");
 const movementSearchEmpty = document.querySelector("#movement-search-empty");
+const statementHelpModal = document.querySelector("#statement-help-modal");
+const closeStatementHelpModal = document.querySelector("#close-statement-help-modal");
 const trackingList = document.querySelector("#tracking-list");
 const trackingEmptyState = document.querySelector("#tracking-empty-state");
 const trackingFeedback = document.querySelector("#tracking-feedback");
@@ -300,6 +303,7 @@ openStatementTextButton.addEventListener("click", () => {
   setPageScrollLock(true);
 });
 openMovementSearchButton?.addEventListener("click", openMovementSearchModalEntry);
+openStatementHelpButton?.addEventListener("click", openStatementHelpModalEntry);
 openMovementAnalysisButton?.addEventListener("click", openMovementAnalysisModalEntry);
 openMonthlyPdfReportButton?.addEventListener("click", openMonthlyPdfReport);
 trackingMenuToggle?.addEventListener("click", () => {
@@ -353,6 +357,12 @@ closeMovementSearchModal?.addEventListener("click", closeMovementSearchModalEntr
 movementSearchModal?.addEventListener("click", (event) => {
   if (event.target.dataset.closeMovementSearch === "true") {
     closeMovementSearchModalEntry();
+  }
+});
+closeStatementHelpModal?.addEventListener("click", closeStatementHelpModalEntry);
+statementHelpModal?.addEventListener("click", (event) => {
+  if (event.target.dataset.closeStatementHelp === "true") {
+    closeStatementHelpModalEntry();
   }
 });
 movementSearchQuery?.addEventListener("input", renderMovementSearch);
@@ -1451,6 +1461,18 @@ function openMovementAnalysisModalEntry() {
 
 function closeMovementAnalysisModalEntry() {
   movementAnalysisModal?.classList.add("hidden");
+  setPageScrollLock(false);
+}
+
+function openStatementHelpModalEntry() {
+  statementMenu.classList.add("hidden");
+  statementMenuToggle.setAttribute("aria-expanded", "false");
+  statementHelpModal?.classList.remove("hidden");
+  setPageScrollLock(true);
+}
+
+function closeStatementHelpModalEntry() {
+  statementHelpModal?.classList.add("hidden");
   setPageScrollLock(false);
 }
 
@@ -2977,16 +2999,27 @@ function parseHeaderlessStatement(rows) {
   return rows
     .map((row) => {
       const columns = row.split("\t").map((column) => column.trim()).filter((column) => column !== "");
+      const date = normalizeDate(columns[0] || "");
+      const hasSecondDate = Boolean(normalizeDate(columns[1] || ""));
+      const descriptionStartIndex = hasSecondDate ? 2 : 1;
+      const minimumColumnCount = hasSecondDate ? 5 : 4;
 
-      if (columns.length < 5) {
+      if (!date || columns.length < minimumColumnCount) {
         return null;
       }
 
+      const amountIndex = columns.length - 2;
+      const balanceIndex = columns.length - 1;
+      const description = columns
+        .slice(descriptionStartIndex, amountIndex)
+        .join(" ")
+        .trim();
+
       return classifyImportedMovement({
-        date: normalizeDate(columns[0] || ""),
-        description: columns[2] || "Movimento",
-        amount: parseMoney(columns[3] || "0"),
-        balance: parseMoney(columns[4] || "0"),
+        date,
+        description: description || "Movimento",
+        amount: parseMoney(columns[amountIndex] || "0"),
+        balance: parseMoney(columns[balanceIndex] || "0"),
       });
     })
     .filter((movement) => movement?.date);
@@ -3006,8 +3039,18 @@ function classifyImportedMovement(movement) {
 
 function looksLikeHeaderlessStatement(firstRow) {
   const columns = firstRow.split("\t").map((column) => column.trim()).filter((column) => column !== "");
+  const hasFirstDate = Boolean(normalizeDate(columns[0] || ""));
+  const hasSecondDate = Boolean(normalizeDate(columns[1] || ""));
 
-  return columns.length >= 5 && Boolean(normalizeDate(columns[0])) && Boolean(normalizeDate(columns[1]));
+  if (!hasFirstDate) {
+    return false;
+  }
+
+  if (hasSecondDate) {
+    return columns.length >= 5;
+  }
+
+  return columns.length >= 4;
 }
 
 function detectSeparator(sample) {
@@ -3204,6 +3247,7 @@ function setPageScrollLock(shouldLock) {
   const hasOpenModal = shouldLock
     || !statementTextModal?.classList.contains("hidden")
     || !movementSearchModal?.classList.contains("hidden")
+    || !statementHelpModal?.classList.contains("hidden")
     || !movementAnalysisModal?.classList.contains("hidden")
     || !financialProductModal?.classList.contains("hidden")
     || !financialProductChartModal?.classList.contains("hidden")

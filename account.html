@@ -313,6 +313,10 @@
                   <span class="menu-item-icon" aria-hidden="true">🗑</span>
                   <span>Apagar extrato mensal</span>
                 </button>
+                <button id="open-statement-help" type="button" class="menu-item menu-item-neutral">
+                  <span class="menu-item-icon" aria-hidden="true">?</span>
+                  <span>Ajuda</span>
+                </button>
               </div>
             </div>
           </div>
@@ -424,6 +428,46 @@
 
         <div id="movement-search-results" class="movement-search-results"></div>
         <p id="movement-search-empty" class="movement-search-empty">Escreve uma palavra para começar a pesquisa.</p>
+      </div>
+    </div>
+
+    <div id="statement-help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="statement-help-title">
+      <div class="modal-backdrop" data-close-statement-help="true"></div>
+      <div class="modal-card movement-search-modal-card">
+        <button id="close-statement-help-modal" type="button" class="modal-close" aria-label="Fechar">
+          ×
+        </button>
+        <div class="panel-heading">
+          <p class="section-kicker">Ajuda</p>
+          <h2 id="statement-help-title">Formatos aceites para o extrato</h2>
+          <p>Podes colar o texto do banco em formatos semelhantes aos exemplos abaixo. A app procura datas, descrição, valor e saldo.</p>
+        </div>
+
+        <div class="statement-help-examples">
+          <article class="statement-help-example">
+            <span class="card-label">Formato tabulado</span>
+            <pre>08/04/2026	08/04/2026	PAG BXVAL- 5504 VIAVERDE	-7,60	347,46
+08/04/2026	08/04/2026	DD Prio.E Mobilit PT218856458A63 PT19109102	-21,08	355,06</pre>
+          </article>
+
+          <article class="statement-help-example">
+            <span class="card-label">Formato com milhares</span>
+            <pre>29/01/26	29/01/26	DD PayPal Europe 5VU22252UKL5N LU960000000000	-3,99	1.254,72
+23/01/26	23/01/26	TRANSFERENCIA - VENCIMENTO	1.882,67	2.018,61</pre>
+          </article>
+
+          <article class="statement-help-example">
+            <span class="card-label">Formato com euro e parênteses</span>
+            <pre>23/03/26  23/03/26  LEVANTAMENTO MB CARTAO **** 715*  (20,00 €)  984,29 €
+23/03/26  23/03/26  ORDENADO / PENSAO NB NB18687 VENCIMENTOS  + 2.082,88 €  + 2.128,92 €</pre>
+          </article>
+
+          <article class="statement-help-example">
+            <span class="card-label">Formato com uma só data</span>
+            <pre>05/05/2026	NETFLIX	-12,99	874,31
+06/05/2026	APPLE ICLOUD	-2,99	871,32</pre>
+          </article>
+        </div>
       </div>
     </div>
 
