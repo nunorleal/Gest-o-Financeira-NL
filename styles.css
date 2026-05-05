@@ -1945,6 +1945,34 @@ h3 {
   margin-top: 0;
 }
 
+.statement-help-examples {
+  display: grid;
+  gap: 14px;
+}
+
+.statement-help-example {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(8, 20, 36, 0.76);
+  border: 1px solid rgba(142, 191, 255, 0.12);
+}
+
+.statement-help-example pre {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(5, 14, 28, 0.74);
+  border: 1px solid rgba(142, 191, 255, 0.12);
+  color: rgba(228, 236, 247, 0.86);
+  font-family: "Manrope", sans-serif;
+  font-size: 0.93rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .summary-card {
   padding: 22px;
   border-radius: 22px;
